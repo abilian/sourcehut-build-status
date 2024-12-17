@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RSS Feed Alert</title>
+    <style>
+      body { font-family: Arial, sans-serif; width: 300px; padding: 10px; }
+      label { display: block; margin: 5px 0; }
+      input, textarea { width: 100%; margin-bottom: 10px; }
+      button { width: 100%; padding: 5px; }
+    </style>
+  </head>
+
+  <body>
+    <h3>RSS Feed Alert</h3>
+    <label for="rssURL">RSS Feed URL:</label>
+    <input type="url" id="rssURL" placeholder="Enter RSS feed URL" />
+
+    <label for="keywords">Keywords (comma-separated):</label>
+    <textarea id="keywords" rows="3" placeholder="Enter keywords"></textarea>
+
+    <button id="save">Save</button>
+    <p id="status"></p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
