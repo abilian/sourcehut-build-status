@@ -6,6 +6,7 @@ let lastChecked = 0; // Last time the feed was checked
 async function checkRSSFeed() {
   if (!monitoredURL) return;
 
+  console.log("Checking RSS feed...");
   try {
     const response = await fetch(monitoredURL);
     const text = await response.text();
@@ -19,10 +20,6 @@ async function checkRSSFeed() {
     // Extract all item titles and descriptions
     const items = xmlDoc.querySelectorAll("item");
     for (const item of items) {
-      const title = item.querySelector("title")?.textContent || "";
-      const guid = item.querySelector("guid")?.textContent || "";
-      const author = item.querySelector("author")?.textContent || "";
-      const link = item.querySelector("link")?.textContent || "";
       const dateString = item.querySelector("pubDate")?.textContent || "";
       const pubDate = Date.parse(dateString);
 
@@ -30,12 +27,17 @@ async function checkRSSFeed() {
         continue;
       }
 
-      console.log("Found item:", title);
+      const title = item.querySelector("title")?.textContent || "";
+      const guid = item.querySelector("guid")?.textContent || "";
+      const author = item.querySelector("author")?.textContent || "";
+      const link = item.querySelector("link")?.textContent || "";
+
       if (title.endsWith("(failed)")) {
-        console.log("Found failed build with guid:", guid);
+        console.log("Found failed build at:", link);
         const description = `Author: ${author}\nLink: ${link}`;
         showNotification(title, description);
         // markBuildAsRead(guid);
+        break;
       }
     }
   } catch (error) {
@@ -46,6 +48,8 @@ async function checkRSSFeed() {
 
 // Display a notification
 function showNotification(title, description) {
+  console.log("Showing notification:", title, description);
+  // new Notification(title, {body: description});
   browser.notifications.create({
     type: "basic",
     iconUrl: "icon-48px.png",
@@ -68,6 +72,7 @@ function showNotification(title, description) {
 
 // Load settings from storage
 function loadSettings() {
+  console.log("Loading settings...");
   browser.storage.local.get(["userId"], (data) => {
     if (data.userId) {
       // Example: https://builds.sr.ht/~sfermigier/rss.xml
@@ -76,6 +81,10 @@ function loadSettings() {
       monitoredURL = "";
     }
   });
+  checkRSSFeed().then(
+    () => console.log("Initial RSS feed check complete"),
+    (error) => console.error("Error checking RSS feed:", error)
+  )
 }
 
 // // Media Query Listener for viewport size changes
